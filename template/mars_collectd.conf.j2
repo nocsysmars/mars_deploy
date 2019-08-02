@@ -1,0 +1,70 @@
+Interval 15
+WriteThreads 1
+Hostname "{{ mgmt_ip }}"
+LoadPlugin network
+LoadPlugin interface
+LoadPlugin load
+LoadPlugin cpu
+LoadPlugin memory
+#LoadPlugin disk
+LoadPlugin python
+#LoadPlugin logfile
+LoadPlugin df
+
+<Plugin network>
+  <server 127.0.0.1 "25826">
+  </server>
+</Plugin>
+
+<Plugin interface>
+	Interface "{{ mgmt_nic_name }}"
+	IgnoreSelected false
+</Plugin>
+
+<Plugin "df">
+  MountPoint "/"
+  ValuesPercentage true
+</Plugin>
+
+#<Plugin disk>
+#	Disk "sda1"
+#	Disk "sda2"
+#	Disk "sda5"
+#</Plugin>
+
+<Plugin memory>
+  ValuesPercentage true
+</Plugin>
+
+#<Plugin logfile>
+#	LogLevel "info"
+#	File "/var/log/collectd.log"
+#	Timestamp true
+#</Plugin>
+
+<LoadPlugin python>
+        Globals true
+</LoadPlugin>
+
+
+<Plugin python>
+	ModulePath "/etc/collectd/modules/"
+	LogTraces true
+	Interactive false
+	Import "write_onos"
+	<Module write_onos>
+	 host "{{ ansible_nodename }}"
+	 port "8181"
+	 user "onos"
+	 password "rocks"
+	 disks ["sda1", "sda2"]
+	 networks ["{{ mgmt_nic_name }}"]
+	</Module>
+</Plugin>
+
+
+<Plugin cpu>
+	ReportByState true
+	ReportByCpu false
+	ValuesPercentage true
+</Plugin>

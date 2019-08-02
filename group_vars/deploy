@@ -1,0 +1,12 @@
+docker_path_local: /opt/prepare/docker/
+docker_path_destination: /opt/docker
+
+dependencies_path_local: /opt/prepare/dependencies/
+dependencies_path_destination: /opt/docker-dependencies
+
+docker_compose_path_local: /opt/prepare/docker-compose/
+docker_compose_path_destination: /usr/local/bin/
+
+remote_project_path: /opt/mars/
+
+docker_image_path_destination: /opt/docker_image/

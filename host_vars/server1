@@ -1,0 +1,18 @@
+
+keepalived_virtual_ips: 192.168.200.50
+keepalived_priority: 150
+keepalived_unicast_peers: 192.168.200.38
+keepalived_command_line_arguments: 
+
+es_java_opts: -Xmx1024m -Xms1024m
+es_java_opts_heap_max: Xmx1024m
+es_java_opts_heap_min: Xms1024m
+es_java_opts_stack: Xss1m
+
+ls_java_opts: -Xmx2g -Xms2g
+
+mgmt_nic_name: eth1
+mgmt_ip: 192.168.200.38
+
+onos_cluster: "192.168.200.38 192.168.200.39 192.168.200.49"
+elasticsearch_cluster: '"192.168.200.38","192.168.200.39","192.168.200.49"'

@@ -1,0 +1,6 @@
+- name: "form cluster"
+  hosts: server1
+  tasks:
+   - name: form-cluster
+     shell: docker exec mars bin/onos-form-cluster {{ onos_cluster }}
+     become: true

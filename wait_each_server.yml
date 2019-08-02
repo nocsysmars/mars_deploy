@@ -1,0 +1,16 @@
+- name: "wait each server"
+  hosts: deploy
+  tasks:
+   - wait_for:
+       host: "{{ mgmt_ip }}"
+       port: 8181
+       state: started
+       delay: 10
+       timeout: 40
+
+   - debug:
+       msg: "cluster IPs {{ onos_cluster }} "
+
+   - name: loging to generate ssh-key
+     shell: sshpass -p karaf ssh -p 8101 karaf@{{ mgmt_ip }} ls
+     ignore_errors: true

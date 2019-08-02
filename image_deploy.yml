@@ -1,0 +1,140 @@
+- name: Deploy services to remote.
+  hosts: deploy
+  sudo: yes
+  tasks:
+    - name: Copy dependencies package to remote
+      become: true
+      copy:
+        src: "{{ dependencies_path_local }}"
+        dest: "{{ dependencies_path_destination }}"
+
+    - name: Copy docker package to remote
+      become: true
+      copy:
+        src: "{{ docker_path_local }}"
+        dest: "{{ docker_path_destination }}"
+        
+    - name: Copy docker image to remote
+      become: true
+      copy:
+        src: "{{ docker_image_path }}"
+        dest: "{{ docker_image_path_destination }}"
+
+    - name: Copy docker-compose package to remote
+      become: true
+      copy:
+        src: "{{ docker_compose_path_local }}"
+        dest: "{{ docker_compose_path_destination }}"
+        mode: 'u+x,g+x'
+
+    - name: Check the directory {{remote_project_path}} exists
+      become: true
+      stat:
+        path: "{{ remote_project_path }}"
+      register: stat_dependencies
+
+    - name: Create {{remote_project_path}} path folder
+      become: true
+      file:
+        path: "{{ remote_project_path }}"
+        state: directory
+        mode: u=rwX,g=rX,o=rX
+      when: stat_dependencies.stat.exists == false
+
+    - name: Copy docker-compose yaml to remote
+      become: true
+      template:
+        src: "./template/docker-compose.yml.j2"
+        dest: "{{ remote_project_path }}docker-compose.yml"
+
+    - name: Copy project config and dockefile
+      become: true
+      copy:
+        src: "{{ item }}"
+        dest: "{{ remote_project_path }}"
+        mode: 'u=rwX,g=rwX,o=rwX'
+      with_items:
+        - ./dockerfile
+        - ./conf
+        - ./public
+        - ./swi
+        
+    - name: Create configuration elasticsearch file from template
+      become: true
+      template:
+        src: "./template/elasticsearch.yml.j2"
+        dest: "{{ remote_project_path }}/conf/elasticsearch/elasticsearch.yml"
+
+    - name: Create configuration elasticsearch java option
+      become: true
+      template:
+        src: "./template/elasticsearch_jvm.options.j2"
+        dest: "{{ remote_project_path }}/conf/elasticsearch/jvm.options"
+
+    - name: modify elasticsearch backup and data folder to all priviledge
+      become: true
+      file:
+        path:  "{{ item }}"
+        owner: root
+        group: root
+        mode: 01777
+      with_items:
+        -  "{{ remote_project_path }}/conf/elasticsearch/data"
+        -  "{{ remote_project_path }}/conf/elasticsearch/backup"
+
+    - name: Create configuration keepalived file from template
+      become: true
+      template:
+        src: "./template/keepalived.conf.j2"
+        dest: "{{ remote_project_path }}/conf/keepalived/keepalived.conf"        
+        
+
+    - name: Create configuration mars_collectd.conf file from template
+      become: true
+      template:
+        src: "./template/mars_collectd.conf.j2"
+        dest: "{{ remote_project_path }}/conf/mars/mars_collectd.conf"        
+                
+
+    - name: Copy Switch images
+      become: true
+      copy:
+        src: "{{ item }}"
+        dest: "{{ remote_project_path }}"
+        mode: 'u=rwX,g=rwX,o=rwX'
+      with_items: "{{ switch_images }}"
+      when:
+        - switch_images is defined
+      ignore_errors: true
+        
+    - name: Finding dependencies files
+      find:
+        paths: "{{ dependencies_path_destination }}"
+        patterns: "*.rpm"
+      register: dependencies_result
+      when: ansible_distribution == 'CentOS'
+
+    - name: Install dependencies
+      become: true
+      yum:
+        name: "{{ item.path }}"
+        state: present
+      with_items: "{{ dependencies_result.files }}"
+      when: ansible_distribution == 'CentOS' 
+
+    - name: Finding docker package
+      find:
+        paths: "{{ docker_path_destination }}"
+        patterns: "*.rpm"
+      register: docker_result
+      when: ansible_distribution == 'CentOS'
+
+    - name: Install docker
+      become: true
+      yum:
+        name: "{{ item.path }}"
+        state: present
+      with_items: "{{ docker_result.files }}"
+      when: ansible_distribution == 'CentOS'
+
+# rpm -ivh package.rpm

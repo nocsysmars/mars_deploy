@@ -1,0 +1,24 @@
+- name: "Import docker image"
+  hosts: deploy
+  sudo : yes
+  tasks: 
+   - name: "Setup elasticsearch"
+     become: true
+     shell: sysctl -w vm.max_map_count=262144
+   - name: "import keepalive"
+     shell: docker load -i {{ docker_image_path_destination }}keepalived_{{ keepalive_version }}.tar
+   - name: "import elk"
+     shell: docker load -i {{ docker_image_path_destination }}elk_{{ elk_version }}.tar
+   - name: "import nginx"
+     shell: docker load -i {{ docker_image_path_destination }}nginx_{{ nginx_version }}.tar
+   - name: "import logstash"
+     shell: docker load -i {{ docker_image_path_destination }}logstash_{{ logstash_version }}.tar
+   - name: "import mars"
+     shell: docker load -i {{ docker_image_path_destination }}mars_{{ mars_version }}.tar
+   - name: Run services in docker
+     become: true
+     shell: COMPOSE_HTTP_TIMEOUT=30000 DOCKER_CLIENT_TIMEOUT=30000 /usr/local/bin/docker-compose up -d
+     args:
+      chdir: "{{ remote_project_path }}"
+
+

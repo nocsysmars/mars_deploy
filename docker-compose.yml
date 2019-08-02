@@ -1,0 +1,94 @@
+version: '2'
+
+services: 
+  keepalive:
+    image: osixia/keepalived:1.4.5
+    container_name: keepalived
+    network_mode: host
+    logging:
+        driver: "json-file"
+        options:
+           max-size: "10m"
+           max-file: "2"
+    
+
+  nginx:
+    image: nginx:1.14.0
+    build:
+        context: dockerfile/nginx
+    container_name: nginx
+    volumes:
+        - ./conf/nginx/:/etc/nginx/
+        - ./swi:/opt/
+        - ./download:/opt/download
+        - ./public:/opt/public
+    depends_on:
+      - mars
+    network_mode: host  
+    logging:
+        driver: "json-file"
+        options:
+           max-size: "10m"
+           max-file: "2"
+
+  elasticsearch:
+    build:
+        context: dockerfile/elasticsearch 
+    container_name: elasticsearch
+    privileged: true
+    network_mode: host
+    volumes:
+      - ./conf/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./conf/elasticsearch/backup:/mnt/backup:rw
+      - ./conf/elasticsearch/data:/usr/share/elasticsearch/data:rw
+    environment:
+      ES_JAVA_OPTS: "-Xmx1024m -Xms1024m"
+    #  network.bind_host: "127.0.0.1"
+    #  network.publish_host: "192.168.200.65"
+    #  cluster.name: "marscluster"
+    #  node.name: "es1"
+    #  path.repo: "['/mnt/bckup']"
+    logging:
+        driver: "json-file"
+        options:
+           max-size: "10m"
+           max-file: "2"
+
+
+  logstash:
+    build: 
+      context: dockerfile/logstash      
+    container_name: logstash
+    privileged: true
+    network_mode: host
+    volumes:
+      - ./conf/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./conf/logstash/pipeline:/usr/share/logstash/pipeline:ro
+    environment:
+      LS_JAVA_OPTS: "-Xmx2g -Xms2g"
+    depends_on:
+      - elasticsearch
+    logging:
+        driver: "json-file"
+        options:
+           max-size: "10m"
+           max-file: "2"
+
+  mars:
+    image: mars:test4
+    container_name: mars
+    network_mode: host
+    privileged: true
+    environment:
+      ONOS_IP: 192.168.200.65
+    volumes:
+      - ./conf/mars/modules:/etc/collectd/modules
+      - ./conf/mars/mars_collectd.conf:/etc/collectd/collectd.conf
+      - ./download:/root/onos/download
+    depends_on:
+      - elasticsearch
+    logging:
+        driver: "json-file"
+        options:
+           max-size: "10m"
+           max-file: "2"

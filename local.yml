@@ -1,0 +1,103 @@
+- name: Get docker package.
+  hosts: localhost
+  tasks:
+    - name: check folder exist
+      stat:
+        path: mars_src
+      register:
+          mars_src_stats
+
+    - name: Get Mars from gitHub
+      shell: "git clone -b {{ mars_branch }} --depth 1 https://github.com/TeamNocsys/mars.git mars_src"
+      when: mars_src_stats.stat.exists == false and build_mars == true
+
+    - name: Update Mars src folder
+      shell: "git checkout {{ mars_branch }} && git pull"
+      args:
+        chdir: mars_src
+      when: mars_src_stats.stat.exists and mars_src_stats.stat.isdir and build_mars == true
+
+    - name: change /mars_src/tools/dev/bash_profile mode
+      shell: chmod a+x ./mars_src/tools/dev/bash_profile
+      when: build_mars == true
+
+    - name: set ONOS environment
+      shell: ./mars_src/tools/dev/bash_profile
+      when: build_mars == true
+
+    - name: delete mars:{{ mars_version }}
+      shell: docker rmi mars:{{ mars_version }}
+      when: build_mars == true
+      ignore_errors: true
+
+    - name: build mars:{{ mars_version }} docker image
+    #  shell:  docker build -t mars:{{ mars_version }} .
+      shell: ./build_docker.sh
+      when: build_mars == true
+      args:
+        chdir: mars_src
+
+    - name: Check the directory target exists before install docker
+      stat:
+        path: "{{ docker_path }}"
+      register: stat_docker
+
+    - name: Create docker path folder
+      file:
+        path: "{{ docker_path }}"
+        state: directory
+        mode: u=rwX,g=rX,o=rX
+      when: stat_docker.stat.exists == false
+
+    - name: Check the directory target exists before install dependencies
+      stat:
+        path: "{{ dependencies_path }}"
+      register: stat_dependencies
+
+    - name: Create dependencies path folder
+      file:
+        path: "{{ dependencies_path }}"
+        state: directory
+        mode: u=rwX,g=rX,o=rX
+      when: stat_dependencies.stat.exists == false
+
+    - name: Check the directory target exists before install docker-compose
+      stat:
+        path: "{{ docker_compose_path }}"
+      register: stat_docker_compose
+
+    - name: Create docker-compose path folder
+      file:
+        path: "{{ docker_compose_path }}"
+        state: directory
+        mode: u=rwX,g=rX,o=rX
+      when: stat_docker_compose.stat.exists == false
+
+    - name: Install docker package # if this failed, try "ansible-playbook -c local local.yml"
+      get_url:
+        url: "https://download.docker.com/linux/centos/7/x86_64/stable/Packages/{{ docker_version }}"
+        dest: "{{ docker_path }}"
+
+    - name: Install dependencies
+      get_url:
+        url: " {{ item }} "
+        dest: "{{ dependencies_path }}"
+      with_items: "{{ dependencies }}"
+      when:
+        - dependencies is defined
+      ignore_errors: true
+
+    - name: Ensure docker-compose is installed and available
+      get_url: 
+        url : https://github.com/docker/compose/releases/download/1.22.0/docker-compose-{{ ansible_system }}-{{ ansible_userspace_architecture }}
+        dest: "{{ docker_compose_path }}"
+        mode: 'u+x,g+x'
+
+    - name: Make sure docker-compose file name
+      shell: "mv `ls {{ docker_compose_path }} | grep docker-compose-` docker-compose"
+      args:
+        chdir: "{{ docker_compose_path }}"
+      ignore_errors: True
+
+    - name: build logstash elasticsearch nginx docker image
+      shell: "{{ docker_compose_path }}/docker-compose build"

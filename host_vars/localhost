@@ -1,0 +1,3 @@
+docker_path: /opt/prepare/docker
+docker_compose_path: /opt/prepare/docker-compose/
+dependencies_path: /opt/prepare/dependencies
