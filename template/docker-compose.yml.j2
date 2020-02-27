@@ -74,7 +74,7 @@ services:
     network_mode: host
     privileged: true
     environment:
-      ONOS_IP: {{mgmt_ip}}
+      - "ONOS_IP={{mgmt_ip}}"
     volumes:
       - ./conf/mars/modules:/etc/collectd/modules
       - ./conf/mars/mars_collectd.conf:/etc/collectd/collectd.conf
