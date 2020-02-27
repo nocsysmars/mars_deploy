@@ -5,14 +5,19 @@
      become: true
      shell: sysctl -w vm.max_map_count=262144
    - name: "import keepalive"
+     become: true
      shell: docker load -i {{ docker_image_path_destination }}keepalived_{{ keepalive_version }}.tar
    - name: "import elk"
+     become: true
      shell: docker load -i {{ docker_image_path_destination }}elk_{{ elk_version }}.tar
    - name: "import nginx"
+     become: true
      shell: docker load -i {{ docker_image_path_destination }}nginx_{{ nginx_version }}.tar
    - name: "import logstash"
+     become: true
      shell: docker load -i {{ docker_image_path_destination }}logstash_{{ logstash_version }}.tar
    - name: "import mars"
+     become: true
      shell: docker load -i {{ docker_image_path_destination }}mars_{{ mars_version }}.tar
    - name: Run services in docker
      become: true
