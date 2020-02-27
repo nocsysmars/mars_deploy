@@ -1,3 +1,7 @@
+<h1>Requirement</h1>
+1. Each server shall have docker-ce installed and docker-compose installed.  
+2. Each server shall have sshpass installed.
+
 <h1>#Step by Step</h1>
 
 ## Prepare files at local
