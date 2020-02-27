@@ -26,5 +26,29 @@ logstash_version: latest
 mars_version: sia
 mars_branch: sia
 build_mars: true
-
+#apps for sia
+onos_apps: "ONOS_APPS=drivers,openflow,fwd,proxyarp,snmp,linkdiscovery\
+        ,com.nocsys.alert\
+        ,com.nocsys.analyzer\
+        ,com.nocsys.webssh\
+        ,com.nocsys.loopdetect\
+        ,com.nocsys.monitor\
+        ,com.nocsys.calcpath\
+        ,com.nocsys.defaultcfg\
+        ,org.onosproject.dhcprelay \
+        ,com.nocsys.dhcpserver\
+        ,com.nocsys.dhcpv6server\
+        ,com.nocsys.drivers.nocsys.gnmi\
+        ,com.nocsys.drivers.nocsys.rest\
+        ,com.nocsys.drivers.nocsys.snmp\
+        ,com.nocsys.eventclient\
+        ,com.nocsys.healthycheck\
+        ,com.nocsys.ntpserver\
+        ,com.nocsys.provider.switchpolling\
+        ,com.nocsys.qos\
+        ,com.nocsys.storm-control\
+        ,com.nocsys.switchmgmt\
+        ,com.nocsys.useraccount\
+        ,com.nocsys.utility"
+#apps for master
 
