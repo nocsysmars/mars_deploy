@@ -1,6 +1,5 @@
 - name: Deploy services to remote.
   hosts: deploy
-  sudo: yes
   tasks:
     - name: Copy dependencies package to remote
       become: true

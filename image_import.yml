@@ -1,6 +1,5 @@
 - name: "Import docker image"
   hosts: deploy
-  sudo : yes
   tasks: 
    - name: "Setup elasticsearch"
      become: true
