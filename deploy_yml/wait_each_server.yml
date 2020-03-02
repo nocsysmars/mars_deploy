@@ -10,7 +10,9 @@
 
    - debug:
        msg: "cluster IPs {{ onos_cluster }} "
+   - name: remove known hosts
+     shell: rm -rf ~/.ssh/known_hosts
 
    - name: loging to generate ssh-key
-     shell: sshpass -p karaf ssh -p 8101 karaf@{{ mgmt_ip }} ls
-     ignore_errors: true
+     shell: sshpass -p karaf ssh  -o 'StrictHostKeyChecking no' -p 8101 karaf@{{ mgmt_ip }} ls
+     #ignore_errors: true
