@@ -32,7 +32,7 @@ services:
            max-file: "2"
 
   elasticsearch:
-    image: mars-deploy_elasticsearch:{{elk_version}}
+    image: mars_deploy_elasticsearch:{{elk_version}}
     container_name: elasticsearch
     privileged: true
     network_mode: host
@@ -50,7 +50,7 @@ services:
            max-file: "2"
 
   logstash:
-    image: mars-deploy_logstash:{{logstash_version}}
+    image: mars_deploy_logstash:{{logstash_version}}
     container_name: logstash
     privileged: true
     network_mode: host
