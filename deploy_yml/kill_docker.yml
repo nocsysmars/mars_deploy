@@ -1,0 +1,9 @@
+- name: "remove running docker image"
+  hosts: deploy
+  tasks:
+    - name: "stop all docker"
+      become: true
+      shell: docker ps -aq|xargs docker stop
+    - name: "remove all docker"
+      become: true
+      shell: docker ps -aq|xargs docker rm
