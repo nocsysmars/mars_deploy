@@ -75,6 +75,7 @@ services:
     privileged: true
     environment:
       - "ONOS_IP={{mgmt_ip}}"
+      - "KARAF_DEBUG=true"
       - "{{onos_apps}}"
     volumes:
       - ./conf/mars/modules:/etc/collectd/modules

@@ -4,3 +4,18 @@
    - name: form-cluster
      shell: docker exec mars bin/onos-form-cluster {{ onos_cluster }}
      become: true
+
+- name: Restart all mars again
+  hosts: all
+  tasks:
+   - wait_for:
+       host: "{{ mgmt_ip }}"
+       port: 8181
+       state: started
+       delay: 10
+       timeout: 40
+
+
+   - name: restart docker to fix form-cluster bug, https://groups.google.com/a/onosproject.org/forum/#!searchin/onos-dev/EventuallyConsistentMapImpl|sort:date/onos-dev/YwzHC7d6Q1g/67El6J--AgAJ
+     become: true
+     shell: docker restart mars
