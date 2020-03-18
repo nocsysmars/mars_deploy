@@ -1,18 +1,18 @@
 ---
 - name: parepare local image 
-  import_playbook:  local.yml
+  import_playbook:  deploy_yml/local.yml
 
 - name: export image to tar file
-  import_playbook: image_export.yml
+  import_playbook: deploy_yml/image_export.yml
 
 - name: deploy image to target server
-  import_playbook: image_deploy.yml
+  import_playbook: deploy_yml/image_deploy.yml
 
 - name: run the docker service
-  import_playbook: image_import.yml
+  import_playbook: deploy_yml/image_import.yml
 
 - name: wait each server up
-  import_playbook: wait_each_server.yml
+  import_playbook: deploy_yml/wait_each_server.yml
 
 - name: form Mars cluster
-  import_playbook: form_cluster.yml
+  import_playbook: deploy_yml/form_cluster.yml
