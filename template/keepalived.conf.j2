@@ -11,11 +11,11 @@ vrrp_instance VI_1 {
   nopreempt
 
   unicast_peer {
-    "{{ keepalived_unicast_peers }}"
+    {{ keepalived_unicast_peers }}
   }
 
   virtual_ipaddress {
-    "{{ keepalived_virtual_ips }}"
+    "{{ keepalived_virtual_ips }}"  
   }
   
   authentication {
