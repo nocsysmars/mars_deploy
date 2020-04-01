@@ -1,7 +1,8 @@
 
 keepalived_virtual_ips: 192.168.200.50
 keepalived_priority: 150
-keepalived_unicast_peers: 192.168.200.39
+#peers don't include self node ip
+keepalived_unicast_peers: "192.168.200.40" "192.168.200.49"
 keepalived_command_line_arguments: 
 
 es_java_opts: -Xmx1024m -Xms1024m
