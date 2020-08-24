@@ -75,6 +75,7 @@ services:
     privileged: true
     environment:
       - "ONOS_IP={{mgmt_ip}}"
+      #- "JAVA_OPTS=-Xms16G -Xmx16G -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -Dcom.sun.management.jmxremote -Dds.lock.timeout.milliseconds=10000"
       - "KARAF_DEBUG=true"
       - "{{onos_apps}}"
     volumes:
