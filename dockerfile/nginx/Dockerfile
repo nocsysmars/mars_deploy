@@ -92,6 +92,10 @@ RUN set -x \
 #RUN ln -sf /dev/stdout /var/log/nginx/access.log \
 #	&& ln -sf /dev/stderr /var/log/nginx/error.log
 
+## Install tftp server##
+RUN apt-get update \
+    && apt-get -y install xinetd tftpd tftp
+##
 
 RUN mkdir -p /tmp
 COPY ./filebeat-6.4.1-amd64.deb /tmp
@@ -100,7 +104,7 @@ COPY ./filebeat.yml /etc/filebeat
 RUN rm -rf /tmp/filebeat-6.4.1-amd64.deb
 COPY ./run.sh /root/
 
-EXPOSE 80 443
+EXPOSE 69 80 443
 
 STOPSIGNAL SIGTERM
 CMD ["./root/run.sh"]
