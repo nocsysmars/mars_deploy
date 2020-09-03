@@ -86,6 +86,8 @@ services:
       - ./conf/mars/modules:/etc/collectd/modules
       - ./conf/mars/mars_collectd.conf:/etc/collectd/collectd.conf
       - ./download:/root/onos/download
+      - ./swi:/opt
+      - /etc/localtime:/etc/localtime
     depends_on:
       - elasticsearch
     logging:
